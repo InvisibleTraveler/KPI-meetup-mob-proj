@@ -104,6 +104,9 @@ REST_FRAMEWORK = {
     ]
 }
 
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_URL = "/static/"
+
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
