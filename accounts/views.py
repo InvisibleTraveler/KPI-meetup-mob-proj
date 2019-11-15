@@ -6,7 +6,7 @@ from rest_framework.generics import GenericAPIView, RetrieveUpdateAPIView, Creat
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from accounts.models import User, Lector
+from accounts.models import User, Lector, Rate
 from accounts.serializers import LectorSerializer, RegisterSerializer, UpdateUserSerializer, \
     VisitorSerializer, CreateRateSerializer, ReadUpdateRateSerializer
 from meetenjoy.core import IsNotAuthenticated, IsLector, IsVisitor
@@ -91,4 +91,7 @@ class UpdateRateLectorView(RetrieveUpdateAPIView):
     permission_classes = [IsAuthenticated, IsVisitor]
 
     def get_queryset(self):
-        return self.request.user.visitor.rates.all()
+        visitor = self.request.user.get_visitor()
+        if visitor is not None:
+            return visitor.rates.all()
+        return Rate.objects.none()

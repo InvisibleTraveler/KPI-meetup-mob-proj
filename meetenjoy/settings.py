@@ -19,6 +19,8 @@ SECRET_KEY = 'zc9j11-&pu=&k*zlbo5kel6ua&=r+#oij$ao!yle1v@0o6jnyn'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env("DEBUG", default=False)
 
+USE_SWAGGER = env.bool("USE_SWAGGER", default=True)
+
 ALLOWED_HOSTS = [
     "meetenjoy.herokuapp.com",
     "localhost",
@@ -38,6 +40,8 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'rest_auth',
     'rest_auth.registration',
+    "drf_yasg",
+    "rest_framework_swagger",
     'allauth',
     'allauth.account',
     'django_extensions',
