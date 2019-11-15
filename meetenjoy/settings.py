@@ -12,7 +12,9 @@ SECRET_KEY = 'zc9j11-&pu=&k*zlbo5kel6ua&=r+#oij$ao!yle1v@0o6jnyn'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "meetenjoy.herokuapp.com",
+]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
