@@ -1,1 +1,1 @@
-web: gunicorn meetenjoy.meetenjoy.wsgi --log-file -
+web: gunicorn meetenjoy.wsgi --log-file -
