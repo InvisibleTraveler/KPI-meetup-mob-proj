@@ -1,2 +1,2 @@
-release: python manage.py migrate --noinput
+release: ./heroku_deploy/release.sh
 web: gunicorn meetenjoy.wsgi --log-file -

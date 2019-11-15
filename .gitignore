@@ -42,6 +42,7 @@ celerybeat-schedule.db
 static/bower_components
 static/css/bundle.css
 static/assets
+staticfiles/
 
 # Default environment settings
 meetenjoy/.env

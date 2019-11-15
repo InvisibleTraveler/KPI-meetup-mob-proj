@@ -62,7 +62,7 @@ class Meeting(models.Model):
     from_url = models.CharField(max_length=256, null=True, blank=True)
 
     creator = models.ForeignKey(Lector, related_name="created_meetings", on_delete=models.CASCADE)
-    participants = models.ManyToManyField(Visitor, related_name="following_meetings", null=True, blank=True)
+    participants = models.ManyToManyField(Visitor, related_name="following_meetings")
     objects = MeetingManager()
 
 
