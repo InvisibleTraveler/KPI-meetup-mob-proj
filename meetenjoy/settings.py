@@ -1,5 +1,12 @@
 import os
 
+import dj_database_url
+import environ
+
+env = environ.Env(DEBUG=(bool, False))
+site_root = environ.Path(__file__) - 2
+if os.path.exists(site_root("meetenjoy", ".env")):
+    environ.Env.read_env()
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -10,7 +17,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'zc9j11-&pu=&k*zlbo5kel6ua&=r+#oij$ao!yle1v@0o6jnyn'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env("DEBUG", default=False)
 
 ALLOWED_HOSTS = [
     "meetenjoy.herokuapp.com",
@@ -74,16 +81,8 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'meetenjoy.wsgi.application'
-# postgresql://localhost:5432/postgres
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'meetenjoy',
-        'USER': 'meetenjoy',
-        'PASSWORD': 'meetenjoy',
-        'HOST': '127.0.0.1',
-        'PORT': '5433',
-    }
+    'default': dj_database_url.config(default=env.str("DATABASE_URL"))
 }
 
 AUTH_PASSWORD_VALIDATORS = [
