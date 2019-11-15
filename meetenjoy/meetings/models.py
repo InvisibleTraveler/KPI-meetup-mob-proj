@@ -3,25 +3,48 @@ from enum import Enum
 from django.contrib.auth import get_user_model
 from django.db import models
 
+from accounts.models import Lector, Visitor
+from meetenjoy.enumeration import Enumeration
+
 User = get_user_model()
 
 
-class MeetingStatus(Enum):
-    DRAFT = 0
-    PUBLISHED = 1
-    CANCELED = 2
-    DELETED = 3
-    FINISHED = 4
+class MeetingQueryset(models.QuerySet):
 
-    @staticmethod
-    def choices():
-        return (
-            (MeetingStatus.DRAFT, 'Draft'),
-            (MeetingStatus.PUBLISHED, 'Published'),
-            (MeetingStatus.CANCELED, 'Canceled'),
-            (MeetingStatus.DELETED, 'Deleted'),
-            (MeetingStatus.FINISHED, 'Finished'),
-        )
+    def all(self):
+        return self.exclude(status=MeetingStatus.DELETED)
+
+    def published(self):
+        return self.filter(status=MeetingStatus.PUBLISHED)
+
+    def full_all(self):
+        return super().all()
+
+
+class MeetingManager(models.Manager):
+
+    def get_queryset(self):
+        return MeetingQueryset(self.model, using=self._db)
+
+    def all(self):
+        return self.get_queryset().all()
+
+    def full_all(self):
+        return self.get_queryset().full_all()
+
+    def published(self) -> models.QuerySet:
+        return self.get_queryset().published()
+
+
+MeetingStatus = Enumeration(
+    [
+        (0, "DRAFT", 'Draft'),
+        (1, "PUBLISHED", 'Published'),
+        (2, "CANCELED", 'Canceled'),
+        (3, "DELETED", 'Deleted'),
+        (4, "FINISHED", 'Finished'),
+    ]
+)
 
 
 class Meeting(models.Model):
@@ -31,16 +54,16 @@ class Meeting(models.Model):
     published_at = models.DateTimeField(null=True, blank=True)
     start_at = models.DateTimeField(null=True, blank=True)
     duration = models.TimeField(null=True, blank=True)
-    status = models.PositiveSmallIntegerField(choices=(MeetingStatus.choices()), default=MeetingStatus.DRAFT)
-    location = models.TextField()
+    status = models.PositiveSmallIntegerField(choices=MeetingStatus, default=MeetingStatus.DRAFT)
+    location = models.TextField(null=True, blank=True)
 
     is_main = models.BooleanField(default=True)
     from_site = models.CharField(max_length=128, blank=True, default=True)
     from_url = models.CharField(max_length=256, null=True, blank=True)
 
-    creator = models.ForeignKey(User, related_name="created_meetings",
-                                on_delete=models.SET_NULL, null=True, blank=True)
-    participants = models.ManyToManyField(User, related_name="following_meetings")
+    creator = models.ForeignKey(Lector, related_name="created_meetings", on_delete=models.CASCADE)
+    participants = models.ManyToManyField(Visitor, related_name="following_meetings", null=True, blank=True)
+    objects = MeetingManager()
 
 
 class Tag(models.Model):

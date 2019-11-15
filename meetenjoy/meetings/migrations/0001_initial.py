@@ -25,7 +25,7 @@ class Migration(migrations.Migration):
                 ('published_at', models.DateTimeField(blank=True, null=True)),
                 ('start_at', models.DateTimeField(blank=True, null=True)),
                 ('duration', models.TimeField(blank=True, null=True)),
-                ('status', models.PositiveSmallIntegerField(choices=[(meetings.models.MeetingStatus(0), 'Draft'), (meetings.models.MeetingStatus(1), 'Published'), (meetings.models.MeetingStatus(2), 'Canceled'), (meetings.models.MeetingStatus(3), 'Deleted'), (meetings.models.MeetingStatus(4), 'Finished')], default=meetings.models.MeetingStatus(0))),
+                ('status', models.PositiveSmallIntegerField(choices=[(0, 'Draft'), (1, 'Published'), (2, 'Canceled'), (3, 'Deleted'), (4, 'Finished')], default=0)),
                 ('location', models.TextField()),
                 ('is_main', models.BooleanField(default=True)),
                 ('from_site', models.CharField(blank=True, default=True, max_length=128)),
