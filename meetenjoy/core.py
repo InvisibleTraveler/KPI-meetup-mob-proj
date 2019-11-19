@@ -8,9 +8,11 @@ class IsNotAuthenticated(BasePermission):
 
 class IsLector(BasePermission):
     def has_permission(self, request, view):
-        return request.user.get_lector() is not None
+        return request.user.is_lector
 
 
-class IsVisitor(BasePermission):
+class IsNotLector(BasePermission):
     def has_permission(self, request, view):
-        return request.user.get_visitor() is not None
+        return not request.user.is_lector
+
+

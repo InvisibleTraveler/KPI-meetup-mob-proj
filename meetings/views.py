@@ -5,8 +5,9 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from meetenjoy.core import IsLector
-from .models import Meeting, MeetingStatus
-from .serializers import MeetingSerializer, ReadOnlyMeetingSerializer
+from .models import Meeting
+from .serializers import MeetingSerializer, ReadOnlyMeetingSerializer, SubscribeToMeetingSerializer, \
+    UnsubscribeFromMeetingSerializer
 
 
 class MeetingCreateView(CreateAPIView):
@@ -17,7 +18,6 @@ class MeetingCreateView(CreateAPIView):
         model = Meeting
 
     def create(self, request, *args, **kwargs):
-        lector = request.user.lector
         data = {
             "title": request.data.get("title"),
             "description": request.data.get("description"),
@@ -25,7 +25,7 @@ class MeetingCreateView(CreateAPIView):
             "duration": request.data.get("duration") or None,
             "status": request.data.get("status"),
             "location": request.data.get("location"),
-            "creator": lector.id,
+            "creator": request.user.id,
         }
         serializer_class = self.get_serializer_class()
         serializer = serializer_class(data=data)
@@ -40,7 +40,7 @@ class UpdateDestroyMeetingView(RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticated, IsLector]
 
     def get_queryset(self):
-        return self.request.user.lector.created_meetings
+        return self.request.user.created_meetings
 
     class Meta:
         model = Meeting
@@ -62,5 +62,41 @@ class MeetingListView(ListAPIView):
         model = Meeting
 
 
-class VisitorSubscribeToMeeting(GenericAPIView):
-    ...
+class MyMeetingListView(ListAPIView):
+    serializer_class = ReadOnlyMeetingSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        return user.following_meetings.all()
+
+    class Meta:
+        model = Meeting
+
+
+class SubscribeToMeetingView(GenericAPIView):
+    serializer_class = SubscribeToMeetingSerializer
+    permission_classes = [IsAuthenticated]
+    http_method_names = ["post"]
+
+    def post(self, request, *args, **kwargs):
+        serializer_class = self.get_serializer_class()
+        serializer = serializer_class(data=request.data, context={"request": request})
+
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(status=status.HTTP_200_OK)
+
+
+class UnsubscribeFromMeetingView(GenericAPIView):
+    serializer_class = UnsubscribeFromMeetingSerializer
+    permission_classes = [IsAuthenticated]
+    http_method_names = ["post"]
+
+    def post(self, request, *args, **kwargs):
+        serializer_class = self.get_serializer_class()
+        serializer = serializer_class(data=request.data, context={"request": request})
+
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(status=status.HTTP_200_OK)

@@ -2,14 +2,14 @@ from django.contrib.auth import login
 from django.db import transaction
 from django.shortcuts import get_object_or_404
 from rest_framework import status
-from rest_framework.generics import GenericAPIView, RetrieveUpdateAPIView, CreateAPIView, ListAPIView
+from rest_framework.generics import GenericAPIView, RetrieveUpdateAPIView, CreateAPIView, ListAPIView, RetrieveAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
-from accounts.models import User, Lector, Rate
-from accounts.serializers import LectorSerializer, RegisterSerializer, UpdateUserSerializer, \
-    VisitorSerializer, CreateRateSerializer, ReadUpdateRateSerializer
-from meetenjoy.core import IsNotAuthenticated, IsLector, IsVisitor
+from accounts.models import User, Rate
+from accounts.serializers import RegisterSerializer, UserSerializer, CreateRateSerializer, ReadUpdateRateSerializer
+from meetenjoy.core import IsNotAuthenticated, IsNotLector
 
 
 class RegistrationAPIView(GenericAPIView):
@@ -26,13 +26,19 @@ class RegistrationAPIView(GenericAPIView):
             else:
                 user = serializer.save()
                 login(request, user)
-                response_data = {}
+                response_data = UserSerializer(instance=user).data
                 response_status = status.HTTP_201_CREATED
             return Response(response_data, status=response_status)
 
 
+class RetrieveUserAPIView(RetrieveAPIView):
+    serializer_class = UserSerializer
+    permission_classes = []
+    queryset = User.objects.all()
+
+
 class RetrieveUpdateUserAPIView(RetrieveUpdateAPIView):
-    serializer_class = UpdateUserSerializer
+    serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
     queryset = User.objects.all()
 
@@ -40,34 +46,21 @@ class RetrieveUpdateUserAPIView(RetrieveUpdateAPIView):
         return self.request.user
 
 
-class RetrieveUpdateLectorAPIView(RetrieveUpdateAPIView):
-    serializer_class = LectorSerializer
-    permission_classes = [IsAuthenticated, IsLector]
-
-    def get_object(self):
-        return self.request.user.lector
-
-
 class LectorListAPIView(ListAPIView):
-    serializer_class = LectorSerializer
-    queryset = Lector.objects.all()
-
-
-class RetrieveUpdateVisitorAPIView(RetrieveUpdateAPIView):
-    serializer_class = VisitorSerializer
-    permission_classes = [IsAuthenticated, IsVisitor]
-
-    def get_object(self):
-        return self.request.user.visitor
+    serializer_class = UserSerializer
+    queryset = User.objects.filter(is_lector=True)
 
 
 class CreateRateLectorView(CreateAPIView):
     serializer_class = CreateRateSerializer
-    permission_classes = [IsAuthenticated, IsVisitor]
+    permission_classes = [IsAuthenticated]
 
     def create(self, request, *args, **kwargs):
-        visitor = request.user.visitor
-        lector = get_object_or_404(Lector, id=request.data.get("lector"))
+        visitor = request.user
+        lector = get_object_or_404(User, id=request.data.get("lector"))
+        if not lector.is_lector:
+            return Response({"message": "Given lector is not lector"},
+                            status=status.HTTP_400_BAD_REQUEST)
         if lector in visitor.rated_lectors.all():
             return Response({"message": "Lector with this id already rated be current visitor"},
                             status=status.HTTP_400_BAD_REQUEST)
@@ -86,12 +79,20 @@ class CreateRateLectorView(CreateAPIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
+class UpgradeToLectorView(APIView):
+    http_method_names = ["post"]
+    permission_classes = [IsAuthenticated, IsNotLector]
+
+    def post(self, request, *args, **kwargs):
+        user = request.user
+        user.is_lector = True
+        user.save()
+
+
 class UpdateRateLectorView(RetrieveUpdateAPIView):
     serializer_class = ReadUpdateRateSerializer
-    permission_classes = [IsAuthenticated, IsVisitor]
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        visitor = self.request.user.get_visitor()
-        if visitor is not None:
-            return visitor.rates.all()
-        return Rate.objects.none()
+        visitor = self.request.user
+        return visitor.visitor_rates.all()

@@ -14,11 +14,11 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='meeting',
             name='creator',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='created_meetings', to='accounts.Lector'),
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='created_meetings', to='accounts.User'),
         ),
         migrations.AlterField(
             model_name='meeting',
             name='participants',
-            field=models.ManyToManyField(related_name='following_meetings', to='accounts.Visitor'),
+            field=models.ManyToManyField(related_name='following_meetings', to='accounts.User'),
         ),
     ]

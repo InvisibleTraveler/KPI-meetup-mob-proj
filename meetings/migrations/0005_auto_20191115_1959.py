@@ -13,6 +13,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='meeting',
             name='participants',
-            field=models.ManyToManyField(related_name='following_meetings', to='accounts.Visitor'),
+            field=models.ManyToManyField(related_name='following_meetings', to='accounts.User'),
         ),
     ]

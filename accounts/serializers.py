@@ -4,12 +4,7 @@ from rest_framework import serializers
 from django.core.exceptions import ValidationError as DjangoValidationError
 from rest_framework.exceptions import ValidationError
 
-from accounts.models import Visitor, User, Lector, USER_TYPE, Rate
-
-USER_CLASS = {
-    USER_TYPE.VISITOR: Visitor,
-    USER_TYPE.LECTOR: Lector,
-}
+from accounts.models import User, Rate
 
 
 # TODO decompose
@@ -17,7 +12,6 @@ class RegisterSerializer(serializers.Serializer):
     username = serializers.CharField(max_length=128, required=True, style={"input_type": "username"})
     password = serializers.CharField(max_length=128, required=True, style={"input_type": "password"})
     email = serializers.EmailField(required=True)
-    user_type = serializers.ChoiceField(choices=USER_TYPE, required=True)
 
     def validate_password(self, password):
         try:
@@ -33,7 +27,6 @@ class RegisterSerializer(serializers.Serializer):
                 email=validated_data["email"],
                 password=validated_data["password"],
             )
-            USER_CLASS[validated_data.get("user_type")].objects.create(user=user)
         except IntegrityError:
             raise ValidationError({"username": "User with this username is already exists"})
         return user
@@ -42,7 +35,7 @@ class RegisterSerializer(serializers.Serializer):
         assert False, "Could not use this serializer for update"
 
 
-class UpdateUserSerializer(serializers.ModelSerializer):
+class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = (
@@ -53,35 +46,10 @@ class UpdateUserSerializer(serializers.ModelSerializer):
             "last_name",
             "phone",
             "location",
-        )
-        read_only_fields = ('username', 'email',)
-
-
-class LectorSerializer(serializers.ModelSerializer):
-    user = UpdateUserSerializer(read_only=True)
-
-    class Meta:
-        model = Lector
-        fields = (
-            "id",
-            "user",
+            "is_lector",
             "description",
-            "rate_count",
-            "rate_summary",
-            "rate",
         )
-        read_only_fields = ('rate_count', 'rate_summary', 'rate')
-
-
-class VisitorSerializer(serializers.ModelSerializer):
-    user = UpdateUserSerializer(read_only=True)
-
-    class Meta:
-        model = Visitor
-        fields = (
-            "id",
-            "user",
-        )
+        read_only_fields = ('username', 'email', 'is_lector')
 
 
 class CreateRateSerializer(serializers.ModelSerializer):
@@ -94,6 +62,11 @@ class CreateRateSerializer(serializers.ModelSerializer):
             "rate",
             "comment",
         )
+
+    def validate(self, attrs):
+        if attrs.get("visitor") == attrs.get("lector"):
+            raise ValidationError({"lector": "Can't set rate for yourself"})
+        return attrs
 
 
 class ReadUpdateRateSerializer(serializers.ModelSerializer):

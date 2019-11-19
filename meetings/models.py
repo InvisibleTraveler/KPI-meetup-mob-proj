@@ -1,9 +1,6 @@
-from enum import Enum
-
 from django.contrib.auth import get_user_model
 from django.db import models
 
-from accounts.models import Lector, Visitor
 from meetenjoy.enumeration import Enumeration
 
 User = get_user_model()
@@ -61,8 +58,8 @@ class Meeting(models.Model):
     from_site = models.CharField(max_length=128, blank=True, default=True)
     from_url = models.CharField(max_length=256, null=True, blank=True)
 
-    creator = models.ForeignKey(Lector, related_name="created_meetings", on_delete=models.CASCADE)
-    participants = models.ManyToManyField(Visitor, related_name="following_meetings")
+    creator = models.ForeignKey(User, related_name="created_meetings", on_delete=models.CASCADE)
+    participants = models.ManyToManyField(User, related_name="following_meetings")
     objects = MeetingManager()
 
 
