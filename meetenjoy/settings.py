@@ -10,16 +10,19 @@ if os.path.exists(site_root("meetenjoy", ".env")):
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'zc9j11-&pu=&k*zlbo5kel6ua&=r+#oij$ao!yle1v@0o6jnyn'
 
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env("DEBUG", default=False)
 
 USE_SWAGGER = env.bool("USE_SWAGGER", default=True)
+USE_SEARCH = env.bool("USE_SEARCH", default=False)
+FIRST_SERVICE_URL = env.str("FIRST_SERVICE_URL", default="")
+SECOND_SERVICE_URL = env.str("SECOND_SERVICE_URL", default="")
+THIRD_SERVICE_URL = env.str("THIRD_SERVICE_URL", default="")
+FIRST_SERVICE_RETRIES = env.int("FIRST_SERVICE_RETRIES", default=1)
+SECOND_SERVICE_RETRIES = env.int("SECOND_SERVICE_RETRIES", default=1)
+THIRD_SERVICE_RETRIES = env.int("THIRD_SERVICE_RETRIES", default=1)
+CACHE_EXPIRES = env.int("CACHE_EXPIRES", default=60 * 5)  # seconds
 
 ALLOWED_HOSTS = [
     "meetenjoy.herokuapp.com",
@@ -45,6 +48,7 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'django_extensions',
+    'django_filters',
 
     'accounts',
     'aggregator',
@@ -110,7 +114,8 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
-    'PAGE_SIZE': 100
+    'PAGE_SIZE': 100,
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
 }
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles/')
@@ -127,3 +132,12 @@ USE_L10N = True
 USE_TZ = True
 
 AUTH_USER_MODEL = 'accounts.User'
+
+DOU_LOAD_CRONTAB = env.dict("DOU_LOAD_CRONTAB", default={"hour": 6, "minute": 1})
+
+REDIS_HOST = env.str("REDIS_HOST", default="redis")
+REDIS_PORT = env.int("REDIS_PORT", default=6379)
+
+CELERY_RESULT_BACKEND = CELERY_BROKER_URL = "redis://{host}:{port}/0".format(
+    host=REDIS_HOST, port=REDIS_PORT
+)

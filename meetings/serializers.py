@@ -13,7 +13,9 @@ class MeetingSerializer(serializers.ModelSerializer):
             "id",
             "title",
             "description",
+            "small_description",
             "created_at",
+            "date_string",
             "published_at",
             "start_at",
             "duration",
@@ -42,6 +44,7 @@ class ReadOnlyMeetingSerializer(serializers.ModelSerializer):
             "id",
             "title",
             "description",
+            "small_description",
             "created_at",
             "published_at",
             "start_at",
@@ -51,6 +54,8 @@ class ReadOnlyMeetingSerializer(serializers.ModelSerializer):
             "is_main",
             "from_site",
             "from_url",
+            "related_id",
+            "date_string",
             "creator",
             "participants_count",
             "is_subscribed",
@@ -123,3 +128,19 @@ class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
         fields = "__all__"
+
+
+class SmallMeetingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Meeting
+        fields = [
+            "id",
+            "title",
+            "description",
+            "small_description",
+            "is_main",
+            "from_site",
+            "from_url",
+            "related_id",
+            "date_string",
+        ]

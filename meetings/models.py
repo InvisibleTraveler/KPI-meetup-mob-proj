@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.db import models
-
+from django.contrib.postgres.fields import JSONField
 from meetenjoy.enumeration import Enumeration
 
 User = get_user_model()
@@ -47,6 +47,7 @@ MeetingStatus = Enumeration(
 class Meeting(models.Model):
     title = models.CharField(max_length=128)
     description = models.TextField(null=True, blank=True)
+    small_description = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now=True)
     published_at = models.DateTimeField(null=True, blank=True)
     start_at = models.DateTimeField(null=True, blank=True)
@@ -57,8 +58,10 @@ class Meeting(models.Model):
     is_main = models.BooleanField(default=True)
     from_site = models.CharField(max_length=128, blank=True, default=True)
     from_url = models.CharField(max_length=256, null=True, blank=True)
+    related_id = models.CharField(max_length=64, null=True, blank=True)
+    date_string = models.CharField(max_length=128, null=True, blank=True)
 
-    creator = models.ForeignKey(User, related_name="created_meetings", on_delete=models.CASCADE)
+    creator = models.ForeignKey(User, related_name="created_meetings", on_delete=models.SET_NULL, null=True, blank=True)
     participants = models.ManyToManyField(User, related_name="following_meetings")
     objects = MeetingManager()
 
@@ -67,3 +70,11 @@ class Tag(models.Model):
     name = models.CharField(max_length=64)
     meetings = models.ManyToManyField("meetings.Meeting", related_name="tags")
     users = models.ManyToManyField(User, related_name="tags")
+
+
+class Cache(models.Model):
+    url = models.URLField()
+    query_params = JSONField()
+    response_json = JSONField()
+    response_status = models.PositiveSmallIntegerField()
+    expires_after = models.DateTimeField()

@@ -44,7 +44,7 @@ class User(AbstractUser):
     @property
     def rate_summary(self):
         if self.is_lector:
-            return self.lector_rates.all.aggregate(rate=Sum('rate')).get("rate", 1)
+            return self.lector_rates.all.aggregate(rate=Sum('rate')).get()
 
     @property
     def rated_lectors(self):
