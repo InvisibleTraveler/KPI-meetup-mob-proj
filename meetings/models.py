@@ -1,6 +1,5 @@
 from django.contrib.auth import get_user_model
 from django.db import models
-from django.contrib.postgres.fields import JSONField
 from meetenjoy.enumeration import Enumeration
 
 User = get_user_model()
@@ -71,10 +70,3 @@ class Tag(models.Model):
     meetings = models.ManyToManyField("meetings.Meeting", related_name="tags")
     users = models.ManyToManyField(User, related_name="tags")
 
-
-class Cache(models.Model):
-    url = models.URLField()
-    query_params = JSONField()
-    response_json = JSONField()
-    response_status = models.PositiveSmallIntegerField()
-    expires_after = models.DateTimeField()

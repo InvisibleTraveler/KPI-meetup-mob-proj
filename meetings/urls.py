@@ -13,8 +13,4 @@ urlpatterns = [
     path('meeting/unsubscribe/', views.UnsubscribeFromMeetingView.as_view()),
 ]
 
-if settings.USE_SEARCH:
 
-    urlpatterns += [
-        path('search/', views.MeetingSearchView.as_view()),
-    ]

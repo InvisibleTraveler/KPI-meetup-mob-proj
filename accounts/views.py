@@ -7,7 +7,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from accounts.models import User, Rate
+from accounts.models import User
 from accounts.serializers import RegisterSerializer, UserSerializer, CreateRateSerializer, ReadUpdateRateSerializer
 from meetenjoy.core import IsNotAuthenticated, IsNotLector
 

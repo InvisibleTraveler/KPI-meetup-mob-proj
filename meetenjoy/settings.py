@@ -135,9 +135,9 @@ AUTH_USER_MODEL = 'accounts.User'
 
 DOU_LOAD_CRONTAB = env.dict("DOU_LOAD_CRONTAB", default={"hour": 6, "minute": 1})
 
-REDIS_HOST = env.str("REDIS_HOST", default="redis")
-REDIS_PORT = env.int("REDIS_PORT", default=6379)
+# REDIS_HOST = env.str("REDIS_HOST", default="redis")
+# REDIS_PORT = env.int("REDIS_PORT", default=6379)
 
-CELERY_RESULT_BACKEND = CELERY_BROKER_URL = "redis://{host}:{port}/0".format(
-    host=REDIS_HOST, port=REDIS_PORT
-)
+# CELERY_RESULT_BACKEND = CELERY_BROKER_URL = "redis://{host}:{port}/0".format(
+#     host=REDIS_HOST, port=REDIS_PORT
+# )
