@@ -44,6 +44,7 @@ class DOUApi:
 
     def get_meetings_by_page(self, page_number):
         page = requests.get(url=f"{self.url}/{page_number}/", headers=self._get_headers())
+        print(page)
         if not page.ok:
             return None
         soup = BeautifulSoup(page.text, 'html.parser')
@@ -80,6 +81,7 @@ class DOUApi:
         return full_meetings_data
 
     def get_meeting(self, meeting_url):
+        print(meeting_url)
         time.sleep(0.1)
         page = requests.get(url=meeting_url, headers=self._get_headers())
         soup = BeautifulSoup(page.text, 'html.parser')
@@ -103,6 +105,7 @@ class DOULoader:
     def load_meetings(self):
         all_meetings = []
         meetings_data = self.api.get_meetings()
+        print("meetings_data: ", meetings_data)
         for meeting in meetings_data:
             try:
                 meeting_obj = Meeting.objects.get(related_id=meeting.get("id"))
