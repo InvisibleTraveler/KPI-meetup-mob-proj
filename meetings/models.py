@@ -54,6 +54,9 @@ class Meeting(models.Model):
     status = models.PositiveSmallIntegerField(choices=MeetingStatus, default=MeetingStatus.DRAFT)
     location = models.TextField(null=True, blank=True)
 
+    main_photo = models.FileField(upload_to="meetings/", null=True, blank=True)
+    photo_url = models.CharField(max_length=400, null=True, blank=True)
+
     is_main = models.BooleanField(default=True)
     from_site = models.CharField(max_length=128, blank=True, default=True)
     from_url = models.CharField(max_length=256, null=True, blank=True)

@@ -19,6 +19,7 @@ POSSIBLE_RATES = Enumeration([
 class User(AbstractUser):
     location = models.TextField(null=True, blank=True)
     phone = models.CharField(max_length=128, null=True, blank=True)
+    photo = models.FileField(upload_to="accounts/", null=True, blank=True)
     is_lector = models.BooleanField(default=False)
     _description = models.TextField(null=True, blank=True)
 

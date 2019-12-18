@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.urls import path, include, re_path
@@ -19,6 +20,7 @@ urlpatterns = [
     path(API_V1, include(meeting_urlpatterns)),
 ]
 urlpatterns += staticfiles_urlpatterns()
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.USE_SWAGGER:
     api_v4_schema_view = get_schema_view(

@@ -45,6 +45,7 @@ class UserSerializer(serializers.ModelSerializer):
             "first_name",
             "last_name",
             "phone",
+            "photo",
             "location",
             "is_lector",
             "description",

@@ -86,11 +86,15 @@ class DOUApi:
         page = requests.get(url=meeting_url, headers=self._get_headers())
         soup = BeautifulSoup(page.text, 'html.parser')
         full_meeting_description = soup.find("article").text.strip("\n\t").replace(u'\xa0', u' ')
+        photo_url = soup.find("img", {"class": "event-info-logo"})
+        if photo_url:
+            photo_url = photo_url.attrs.get("src")
         tags = soup.find("div", {"class": "b-post-tags"})
         tags = list(map(lambda t: t.text, tags.find_all("a")))
         return {
             "full_description": full_meeting_description,
             "tags": tags,
+            "photo_url": photo_url,
         }
 
 
@@ -118,6 +122,7 @@ class DOULoader:
                     description=meeting.get("full_description"),
                     small_description=meeting.get("pre_description"),
                     date_string=meeting.get("date_string"),
+                    photo_url=meeting.get("photo_url"),
                     status=MeetingStatus.PUBLISHED,
                     is_main=False,
                 )

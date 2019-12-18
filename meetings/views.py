@@ -1,21 +1,15 @@
-from abc import ABC, abstractmethod
-
-import requests
-from django.conf import settings
-from django.utils.timezone import now
-from rest_framework import status, generics
+from rest_framework import status
 from rest_framework.generics import RetrieveUpdateDestroyAPIView, ListAPIView, CreateAPIView, RetrieveAPIView, \
     GenericAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from meetenjoy.core import IsLector
-from .models import Meeting, MeetingStatus
+from .models import Meeting
 from .serializers import (
     MeetingSerializer,
     ReadOnlyMeetingSerializer,
     SubscribeToMeetingSerializer,
     UnsubscribeFromMeetingSerializer,
-    SmallMeetingSerializer,
 )
 
 
@@ -32,6 +26,7 @@ class MeetingCreateView(CreateAPIView):
             "description": request.data.get("description"),
             "start_at": request.data.get("start_at") or None,
             "duration": request.data.get("duration") or None,
+            "main_photo": request.data.get("main_photo") or None,
             "status": request.data.get("status"),
             "location": request.data.get("location"),
             "creator": request.user.id,

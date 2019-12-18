@@ -141,6 +141,7 @@ class MeetupLoader:
                     title=meeting.get("title"),
                     description=meeting.get("description"),
                     date_string=meeting.get("date_string"),
+                    photo_url=meeting.get("photo_url"),
                     status=MeetingStatus.PUBLISHED,
                     is_main=False,
                 )
