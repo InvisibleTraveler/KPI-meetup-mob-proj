@@ -64,7 +64,7 @@ class CreateRateSerializer(serializers.ModelSerializer):
         )
 
     def validate(self, attrs):
-        if attrs.get() == attrs.get():
+        if attrs.get("visitor") == attrs.get("lector"):
             raise ValidationError({"lector": "Can't set rate for yourself"})
         return attrs
 
