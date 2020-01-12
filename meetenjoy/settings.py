@@ -136,6 +136,8 @@ USE_TZ = True
 AUTH_USER_MODEL = 'accounts.User'
 
 DOU_LOAD_CRONTAB = env.dict("DOU_LOAD_CRONTAB", default={"hour": 6, "minute": 1})
+DOU_MEETUP_CRONTAB = env.dict("DOU_MEETUP_CRONTAB", default={"hour": 6, "minute": 1})
+UPDATE_MEETING_STATUSES_CRONTAB = env.dict("UPDATE_MEETING_STATUSES_CRONTAB", default={"minute": 30})
 
 # REDIS_HOST = env.str("REDIS_HOST", default="redis")
 # REDIS_PORT = env.int("REDIS_PORT", default=6379)
