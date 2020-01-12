@@ -19,7 +19,6 @@ class MeetingSerializer(serializers.ModelSerializer):
             "published_at",
             "start_at",
             "duration",
-            "status",
             "location",
             "is_main",
             "from_site",

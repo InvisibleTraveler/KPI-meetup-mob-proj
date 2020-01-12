@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'allauth.account',
     'django_extensions',
     'django_filters',
+    'graphene_django',
 
     'accounts',
     'aggregator',
@@ -141,3 +142,7 @@ REDIS_PORT = env.int("REDIS_PORT", default=6379)
 CELERY_RESULT_BACKEND = CELERY_BROKER_URL = "redis://{host}:{port}/0".format(
     host=REDIS_HOST, port=REDIS_PORT
 )
+
+GRAPHENE = {
+    'SCHEMA': 'meetenjoy.schema.schema'
+}

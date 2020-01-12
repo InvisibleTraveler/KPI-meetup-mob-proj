@@ -6,7 +6,7 @@ from django.urls import path, include, re_path
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework import permissions
-
+from graphene_django.views import GraphQLView
 from meetings.urls import urlpatterns as meeting_urlpatterns
 from accounts.urls import urlpatterns as accounts_urlpatterns
 
@@ -17,6 +17,7 @@ urlpatterns = [
     path(API_V1, include("rest_auth.urls")),
     path(API_V1, include(accounts_urlpatterns)),
     path(API_V1, include(meeting_urlpatterns)),
+    path("graphql", GraphQLView.as_view(graphiql=True)),
 ]
 urlpatterns += staticfiles_urlpatterns()
 

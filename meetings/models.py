@@ -65,6 +65,9 @@ class Meeting(models.Model):
     participants = models.ManyToManyField(User, related_name="following_meetings")
     objects = MeetingManager()
 
+    def __str__(self):
+        return self.title
+
 
 class Tag(models.Model):
     name = models.CharField(max_length=64)

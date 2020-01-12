@@ -125,6 +125,7 @@ class FirstServiceBuilder(BaseServiceBuilder):
     @staticmethod
     def build_meeting(meeting):
         return Meeting(
+            id=-1,
             title=meeting.get("title"),
             description=meeting.get("description"),
             status=MeetingStatus.PUBLISHED,
@@ -137,6 +138,7 @@ class SecondServiceBuilder(BaseServiceBuilder):
     @staticmethod
     def build_meeting(meeting):
         return Meeting(
+            id=-1,
             title=meeting.get("title"),
             description=meeting.get("description"),
             status=MeetingStatus.PUBLISHED,
@@ -148,6 +150,7 @@ class ThirdServiceBuilder(BaseServiceBuilder):
     @staticmethod
     def build_meeting(meeting):
         return Meeting(
+            id=-1,
             related_id=meeting.get("id"),
             from_site="https://dou.ua/",
             from_url=meeting.get("url"),
@@ -221,9 +224,7 @@ class MeetingSearchView(generics.ListAPIView):
             (self.get_meetings_from_third_service, ThirdServiceBuilder),
         ]
 
-    def get_queryset(self):
-        title = self.request.query_params.get("title", "")
-        description = self.request.query_params.get("description", "")
+    def get_queryset_by_args(self, title, description):
         meetings = Meeting.objects.filter(title__icontains=title, description__icontains=description)
         len(meetings)  # executing query
         meetings_from_services = []
@@ -232,3 +233,8 @@ class MeetingSearchView(generics.ListAPIView):
         for meeting in meetings_from_services:
             meetings._result_cache.append(meeting)
         return meetings
+
+    def get_queryset(self):
+        title = self.request.query_params.get("title", "")
+        description = self.request.query_params.get("description", "")
+        return self.get_queryset_by_args(title, description)
