@@ -1,4 +1,5 @@
 from rest_framework import status
+from rest_framework.filters import SearchFilter
 from rest_framework.generics import RetrieveUpdateDestroyAPIView, ListAPIView, CreateAPIView, RetrieveAPIView, \
     GenericAPIView
 from rest_framework.permissions import IsAuthenticated
@@ -61,6 +62,8 @@ class RetrieveMeetingView(RetrieveAPIView):
 class MeetingListView(ListAPIView):
     serializer_class = ReadOnlyMeetingSerializer
     queryset = Meeting.objects.published()
+    filter_backends = [SearchFilter]
+    search_fields = ['title', 'description']
 
     class Meta:
         model = Meeting
@@ -69,10 +72,26 @@ class MeetingListView(ListAPIView):
 class MyMeetingListView(ListAPIView):
     serializer_class = ReadOnlyMeetingSerializer
     permission_classes = [IsAuthenticated]
+    filter_backends = [SearchFilter]
+    search_fields = ['title', 'description']
 
     def get_queryset(self):
         user = self.request.user
         return user.following_meetings.all()
+
+    class Meta:
+        model = Meeting
+
+
+class CreatedMeetingsListView(ListAPIView):
+    serializer_class = ReadOnlyMeetingSerializer
+    permission_classes = [IsAuthenticated, IsLector]
+    filter_backends = [SearchFilter]
+    search_fields = ['title', 'description']
+
+    def get_queryset(self):
+        user = self.request.user
+        return user.created_meetings.all()
 
     class Meta:
         model = Meeting
